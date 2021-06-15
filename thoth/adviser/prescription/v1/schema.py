@@ -364,6 +364,36 @@ PRESCRIPTION_STEP_SCHEMA = Schema(
 )
 
 #
+# Skip package step.
+#
+
+PRESCRIPTION_SKIP_PACKAGE_STEP_RUN_ENTRY_SCHEMA = Schema(
+    {
+        **_UNIT_RUN_SCHEMA_BASE_DICT,
+    }
+)
+
+PRESCRIPTION_SKIP_PACKAGE_STEP_MATCH_ENTRY_SCHEMA = Schema(
+    {
+        Required("package_name"): Optional(_NONEMPTY_STRING),
+        Required("state"): Schema({Required("resolved_dependencies"): [PACKAGE_VERSION_SCHEMA]}),
+    }
+)
+
+PRESCRIPTION_SKIP_PACKAGE_STEP_SCHEMA = Schema(
+    {
+        Required("match"): Any(
+            All([PRESCRIPTION_SKIP_PACKAGE_STEP_MATCH_ENTRY_SCHEMA], Length(min=1)),
+            PRESCRIPTION_SKIP_PACKAGE_STEP_MATCH_ENTRY_SCHEMA,
+        ),
+        Required("type"): "step.SkipPackage",
+        Optional("run"): PRESCRIPTION_SKIP_PACKAGE_STEP_RUN_ENTRY_SCHEMA,
+        **_UNIT_SCHEMA_BASE_DICT,
+    }
+)
+
+
+#
 # Stride unit.
 #
 
@@ -453,7 +483,7 @@ PRESCRIPTION_SPEC_UNITS_SCHEMA = Schema(
     {
         Optional("boots"): [PRESCRIPTION_BOOT_SCHEMA],
         Optional("sieves"): [Any(PRESCRIPTION_SIEVE_SCHEMA, PRESCRIPTION_SKIP_PACKAGE_SIEVE_SCHEMA)],
-        Optional("steps"): [PRESCRIPTION_STEP_SCHEMA],
+        Optional("steps"): [Any(PRESCRIPTION_STEP_SCHEMA, PRESCRIPTION_SKIP_PACKAGE_STEP_SCHEMA)],
         Optional("pseudonyms"): [PRESCRIPTION_PSEUDONYM_SCHEMA],
         Optional("strides"): [PRESCRIPTION_STRIDE_SCHEMA],
         Optional("wraps"): [Any(PRESCRIPTION_GITHUB_RELEASE_NOTES_WRAP_SCHEMA, PRESCRIPTION_WRAP_SCHEMA)],
