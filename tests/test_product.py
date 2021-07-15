@@ -651,3 +651,6 @@ black = true
         }
 
         assert product.to_dict() == expected
+
+    def test_construct_dependency_graph_basic(self) -> None:
+        """Test constructing dependency graph."""
